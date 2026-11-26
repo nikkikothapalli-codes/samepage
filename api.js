@@ -6,11 +6,16 @@ export async function adaptPage({ text, image, level, language, signal }) {
     body: JSON.stringify({ text, image, level, language }),
     signal,
   });
+  const raw = await res.text();
   let data;
   try {
-    data = await res.json();
+    data = JSON.parse(raw);
   } catch {
-    throw new Error("The server didn't respond correctly. If you're running this locally, use `netlify dev`.");
+    if (res.status === 404 || res.status === 405)
+      throw new Error(`The AI isn't set up on this site yet (error ${res.status}). The site needs to be deployed from GitHub so Netlify can build the "adapt" function. Drag-and-drop deploys skip it.`);
+    if (res.status >= 500)
+      throw new Error(`The AI function crashed or timed out (error ${res.status}). Check Netlify → Logs → Edge Functions → adapt.`);
+    throw new Error(`Unexpected response from the AI (error ${res.status}). Try again.`);
   }
   if (!res.ok || data.error) throw new Error(data.error || "Something went wrong. Try again.");
   return normalize(data, text);
