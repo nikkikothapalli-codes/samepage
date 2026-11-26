@@ -1,0 +1,10 @@
+[build]
+  # Files are uploaded flat; the build step moves the edge function into the folder Netlify expects.
+  command = "mkdir -p netlify/edge-functions && cp edge-simplify.js netlify/edge-functions/adapt.js && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[dev]
+  framework = "vite"

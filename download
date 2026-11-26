@@ -1,0 +1,6 @@
+node_modules/
+.netlify/
+.env
+dist/
+functions/
+netlify/
